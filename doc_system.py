@@ -11,7 +11,7 @@
 import os
 import random
 from fpdf import FPDF
-
+from datetime import datetime 
 
 # === Doctor Information & Categories === #
 
@@ -451,6 +451,23 @@ def export_to_pdf(patient_name, patient_contact, patient_email, patient_address,
    pdf.set_font("Times", '', 13)
    pdf.cell(0,7,f"#{ticket_number}", ln=True)
    pdf.ln(10)
+
+
+   now = datetime.now()
+   date_submitted = now.strftime("%B %d, %Y")
+   time_submitted = now.strftime("%I:%M %p")
+   
+   pdf.set_font("Times", 'B', 13)
+   pdf.cell(50, 8, "Date Submitted:", ln=False)
+   pdf.set_font("Times", '', 13)
+   pdf.cell(0, 8, date_submitted, ln=True)
+
+   pdf.set_font("Times", 'B', 13)
+   pdf.cell(50, 8, "Time Submitted:", ln=False)
+   pdf.set_font("Times", '', 13)
+   pdf.cell(0, 8, time_submitted, ln=True)
+   pdf.ln(10)
+
     
    pdf.set_draw_color(255, 200, 220)
    pdf.set_line_width(1.2)
@@ -466,7 +483,6 @@ def export_to_pdf(patient_name, patient_contact, patient_email, patient_address,
    print(f"\nPDF has been successfully exported as {filename}'")
 
    os.startfile(filename)
-
 
 #============================================================
 
