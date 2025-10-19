@@ -400,7 +400,7 @@ def export_to_pdf(patient_name, patient_contact, patient_email, patient_address,
     
    pdf.set_font("Times", 'B', 18)
    pdf.set_text_color(0, 0, 0)
-   pdf.cell(0, 10, "Doctor Appointment Summary", ln=True, align="C")
+   pdf.cell(0, 10, "Appointment Summary", ln=True, align="C")
    pdf.ln(8)
     
    pdf.set_font("Times", 'B', 13)
@@ -447,7 +447,7 @@ def export_to_pdf(patient_name, patient_contact, patient_email, patient_address,
    pdf.cell(0, 8, time_choice, ln=True)
 
    pdf.set_font("Times", 'B', 13)
-   pdf.cell(50, 8, "Ticket Number:", ln=False)
+   pdf.cell(50, 8, "Ticket No.", ln=False)
    pdf.set_font("Times", '', 13)
    pdf.cell(0,7,f"#{ticket_number}", ln=True)
    pdf.ln(10)
@@ -459,12 +459,13 @@ def export_to_pdf(patient_name, patient_contact, patient_email, patient_address,
     
    pdf.set_font("Times", 'I', 12)
    pdf.set_text_color(0, 0, 0)
-   pdf.multi_cell(0, 8,)
-   "Thank you for scheduling your appointment with us. "
+   pdf.multi_cell(0, 8, "Thank you for scheduling your appointment with us!", align='C')
         
     
    pdf.output(filename)
-   print(f"\nPDF has been uccessfully exported as {filename}'")
+   print(f"\nPDF has been successfully exported as {filename}'")
+
+   os.startfile(filename)
 
 
 #============================================================
