@@ -11,6 +11,7 @@
 import os
 import random
 from fpdf import FPDF
+from playsound import playsound
 from datetime import datetime 
 
 # === Doctor Information & Categories === #
@@ -39,6 +40,12 @@ patient_doctor = ""
 day_choice = ""
 time_choice = ""
 ticket_number = ""
+played1 = False 
+played2 = False 
+played3 = False 
+played4 = False 
+played5 = False 
+played6 = False 
     
 # === Stored Book Appointments === #
 patients = []
@@ -61,7 +68,7 @@ main_options = {
 # ================================================
 
 def doctor():
-  global patient_doctor
+  global patient_doctor, played1
   print("==============================================")
   print("               DOCTOR SELECTION               ")
   print("==============================================")
@@ -71,6 +78,9 @@ def doctor():
   print("4. General Physician")
   print("5. Psychiatrist")
   print("==============================================")
+  if not played1:
+        playsound("doctor.wav")
+        played1 = True
   doctor_category = input("Enter the number assigned to your chosen category (1-5): ")
   patient_doctor = ""
 
@@ -167,7 +177,7 @@ def doctor():
 # ================================================
 
 def schedule():
-    global day_choice, time_choice 
+    global day_choice, time_choice, played2 
     os.system('cls')
     print("==============================================")
     print("          SCHEDULE AN APPOINTMENT             ")
@@ -178,6 +188,9 @@ def schedule():
     print("4. Thursday")
     print("5. Friday")
     print("==============================================")
+    if not played2:
+          playsound("schedule.wav")
+          played2 = True
     day_input = input("Enter the number assigned to your chosen day (1-5): ")
     time_choice = ""
 
@@ -322,12 +335,14 @@ def schedule():
 # ================================================
 
 def view_appointments():
-    global ticket_number 
+    global ticket_number, played3, played4, played5, played6 
     os.system('cls')
     print("==============================================")
     print("           VIEW APPOINTMENT RECORDS           ")
     print("==============================================")
-                
+    if not played3:
+          playsound("view_details.wav")
+          played3 = True            
     patient_name = input("\nEnter your name: ")
     patient_contact = input("Enter your contact number: ")
     patient_email = input("Enter your contact email: ")
@@ -350,12 +365,16 @@ def view_appointments():
   
     if not all([patient_name.strip(), patient_contact.strip(), patient_email.strip(), patient_address.strip()]):
         print("\nOops! Missing personal details detected. Kindly ensure all fields are filled in.")
-
-  
+        if not played5:
+          playsound("oops.wav")
+          played5 = True   
 
     elif not patient_doctor or not day_choice or not time_choice:
         print("\nIncomplete Details.")
         print("Please select your doctor, appointment day, and time before proceeding.")
+        if not played6:
+          playsound("incomplete.wav")
+          played6 = True  
 
     else:
         
@@ -364,7 +383,9 @@ def view_appointments():
         print("\nThank you! Your appointment has been successfully recorded")
         print(f"Ticket Number: #{ticket_number}")
         print("==============================================")
-        
+        if not played4:
+          playsound("summary.wav")
+          played4 = True        
         export_choice = input("\nDo you wish to export your appointment details to PDF? (yes/no): ").strip().lower()
         if export_choice == "yes":
           export_to_pdf(patient_name, patient_contact, patient_email, patient_address,
@@ -503,15 +524,20 @@ def display():
     print("3: View Appointment Records")
     print("4: Exit")
     print("================================================")
-
+    
 #main program loop
 # It continuously displays until user choose exits.
 #=============================================================
+played = False
+played7 = False
 
 while True:
    display()
+   if not played:
+        playsound("welcome.wav")
+        played = True
    option = input("\nPlease enter your option( 1, 2, 3, or 4):")
-
+   
    if option == "1":
     os.system('cls')
     print("\nYou have selected: -- View Available Doctors -- ")
@@ -536,6 +562,9 @@ while True:
     if confirm == "yes":
         os.system('cls')
         print("\n-- Your session has ended. Thank you! --")
+        if not played7:
+          playsound("exit.wav")
+          played7 = True
         break
     elif confirm == "no":
         os.system('cls')
