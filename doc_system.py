@@ -12,7 +12,9 @@ import os
 import random
 from fpdf import FPDF
 from playsound import playsound
-from datetime import datetime 
+from datetime import datetime
+import tkinter as tk
+from tkinter import messagebox, ttk, scrolledtext 
 
 # === Doctor Information & Categories === #
 
@@ -63,10 +65,9 @@ main_options = {
 }
 
 # ================================================
-# Function: doctor()
-# Displays a list of doctor categories and let users choose their preffered doctors.
+# Function: doctor() - DEPRECATED (Use GUI instead)
 # ================================================
-
+"""
 def doctor():
   global patient_doctor, played1
   print("==============================================")
@@ -169,13 +170,13 @@ def doctor():
     print(f"\nYou successfully selected: {patient_doctor}")
 
   input("\nPress Enter to return to the main menu...")
+"""
 
 
 # ================================================
-# Function: schedule()
-# Let users choose what day and time for their appointment.
+# Function: schedule() - DEPRECATED (Use GUI instead)
 # ================================================
-
+"""
 def schedule():
     global day_choice, time_choice, played2 
     os.system('cls')
@@ -327,13 +328,13 @@ def schedule():
     else:
         print("Invalid Day Selection")
         input("\nPress Enter to return to the main menu...")
+"""
 
 
 # ================================================
-# Function: view_appointments()
-# Asks and displays patient appointment details and checks for missing or invalid information
+# Function: view_appointments() - DEPRECATED (Use GUI instead)
 # ================================================
-
+"""
 def view_appointments():
     global ticket_number, played3, played4, played5, played6 
     os.system('cls')
@@ -393,6 +394,7 @@ def view_appointments():
 
 
     input("\nPress Enter to return to the main menu...")
+"""
 
 #===============================================================
 # Function: export_to_pdf()
@@ -508,71 +510,350 @@ def export_to_pdf(patient_name, patient_contact, patient_email, patient_address,
 #============================================================
 
 # ================================================
-# Function: display()
-# The main menu and let user's choose their options.
+# GUI Main Application Class
 # ================================================
 
-def display():
-    os.system('cls')
-    print("==============================================")
-    print("   Welcome to the Doctor Appointment System   ")
-    print("==============================================")
-                
-    print("\nMain Menu")
-    print("1: View Available Doctors")
-    print("2: Schedule an Appointment")
-    print("3: View Appointment Records")
-    print("4: Exit")
-    print("================================================")
+class DoctorAppointmentApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Doctor Appointment System")
+        self.root.geometry("500x400")
+        self.root.resizable(False, False)
+        self.played = False
+        self.show_main_menu()
     
-#main program loop
-# It continuously displays until user choose exits.
-#=============================================================
+    def clear_window(self):
+        """Clear all widgets from the main window"""
+        for widget in self.root.winfo_children():
+            widget.destroy()
+    
+    def show_main_menu(self):
+        """Display the main menu"""
+        self.clear_window()
+        
+        if not self.played:
+            try:
+                playsound("welcome.wav")
+            except:
+                pass
+            self.played = True
+        
+        # Main frame
+        frame = tk.Frame(self.root, bg="#f0f0f0")
+        frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+        
+        # Title
+        title_label = tk.Label(frame, text="Welcome to the Doctor Appointment System", 
+                              font=("Arial", 14, "bold"), bg="#f0f0f0")
+        title_label.pack(pady=20)
+        
+        # Buttons
+        btn_doctors = tk.Button(frame, text="View Available Doctors", width=30, 
+                               command=self.show_doctor_menu, bg="#4CAF50", fg="white", 
+                               font=("Arial", 10), pady=10)
+        btn_doctors.pack(pady=5)
+        
+        btn_schedule = tk.Button(frame, text="Schedule an Appointment", width=30,
+                                command=self.show_schedule_menu, bg="#4CAF50", fg="white",
+                                font=("Arial", 10), pady=10)
+        btn_schedule.pack(pady=5)
+        
+        btn_view = tk.Button(frame, text="View Appointment Records", width=30,
+                            command=self.show_view_records, bg="#4CAF50", fg="white",
+                            font=("Arial", 10), pady=10)
+        btn_view.pack(pady=5)
+        
+        btn_exit = tk.Button(frame, text="Exit", width=30,
+                            command=self.exit_app, bg="#f44336", fg="white",
+                            font=("Arial", 10), pady=10)
+        btn_exit.pack(pady=5)
+    
+    def show_doctor_menu(self):
+        """Show doctor selection menu"""
+        self.clear_window()
+        
+        frame = tk.Frame(self.root, bg="#f0f0f0")
+        frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+        
+        title_label = tk.Label(frame, text="Doctor Selection", font=("Arial", 14, "bold"), bg="#f0f0f0")
+        title_label.pack(pady=10)
+        
+        label = tk.Label(frame, text="Select a doctor category:", bg="#f0f0f0")
+        label.pack()
+        
+        # Create a frame for doctor categories
+        doctor_frame = tk.Frame(frame, bg="#f0f0f0")
+        doctor_frame.pack(pady=10)
+        
+        categories = ["Pediatrician", "Ophthalmologist", "Cardiologist", "General Physician", "Psychiatrist"]
+        
+        for i, category in enumerate(categories):
+            btn = tk.Button(doctor_frame, text=category, width=25,
+                           command=lambda cat=category: self.show_doctor_selection(cat),
+                           bg="#2196F3", fg="white", font=("Arial", 10), pady=5)
+            btn.pack(pady=2)
+        
+        # Back button
+        btn_back = tk.Button(frame, text="Back to Main Menu", width=30,
+                            command=self.show_main_menu, bg="#FF9800", fg="white", pady=5)
+        btn_back.pack(side=tk.BOTTOM, pady=10)
+    
+    def show_doctor_selection(self, category):
+        """Show specific doctors for selected category"""
+        self.clear_window()
+        
+        frame = tk.Frame(self.root, bg="#f0f0f0")
+        frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+        
+        title_label = tk.Label(frame, text=f"Select a {category}", font=("Arial", 14, "bold"), bg="#f0f0f0")
+        title_label.pack(pady=10)
+        
+        global patient_doctor, played1
+        
+        category_doctors = {
+            "Pediatrician": ["Dr. Mendoza", "Dr. Flores"],
+            "Ophthalmologist": ["Dr. Bautista", "Dr. Carmen"],
+            "Cardiologist": ["Dr. Smith", "Dr. Wilson"],
+            "General Physician": ["Dr. Robinson", "Dr. Campbell"],
+            "Psychiatrist": ["Dr. Lim", "Dr. Fernandez"],
+        }
+        
+        if not played1:
+            try:
+                playsound("doctor.wav")
+            except:
+                pass
+            played1 = True
+        
+        doc_list = category_doctors[category]
+        
+        for doc in doc_list:
+            btn = tk.Button(frame, text=doc, width=25,
+                           command=lambda d=doc: self.select_doctor(d),
+                           bg="#2196F3", fg="white", font=("Arial", 10), pady=5)
+            btn.pack(pady=5)
+        
+        # Back button
+        btn_back = tk.Button(frame, text="Back", width=30,
+                            command=self.show_doctor_menu, bg="#FF9800", fg="white", pady=5)
+        btn_back.pack(side=tk.BOTTOM, pady=10)
+    
+    def select_doctor(self, doctor_name):
+        """Select a doctor"""
+        global patient_doctor
+        patient_doctor = doctor_name
+        messagebox.showinfo("Success", f"You successfully selected: {patient_doctor}")
+        self.show_doctor_menu()
+    
+    def show_schedule_menu(self):
+        """Show schedule selection menu"""
+        self.clear_window()
+        
+        frame = tk.Frame(self.root, bg="#f0f0f0")
+        frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+        
+        title_label = tk.Label(frame, text="Schedule an Appointment", font=("Arial", 14, "bold"), bg="#f0f0f0")
+        title_label.pack(pady=10)
+        
+        label = tk.Label(frame, text="Select a day:", bg="#f0f0f0")
+        label.pack()
+        
+        global played2
+        if not played2:
+            try:
+                playsound("schedule.wav")
+            except:
+                pass
+            played2 = True
+        
+        days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+        
+        for day in days:
+            btn = tk.Button(frame, text=day, width=25,
+                           command=lambda d=day: self.show_time_selection(d),
+                           bg="#2196F3", fg="white", font=("Arial", 10), pady=5)
+            btn.pack(pady=2)
+        
+        # Back button
+        btn_back = tk.Button(frame, text="Back to Main Menu", width=30,
+                            command=self.show_main_menu, bg="#FF9800", fg="white", pady=5)
+        btn_back.pack(side=tk.BOTTOM, pady=10)
+    
+    def show_time_selection(self, day):
+        """Show time slots for selected day"""
+        self.clear_window()
+        
+        frame = tk.Frame(self.root, bg="#f0f0f0")
+        frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+        
+        title_label = tk.Label(frame, text=f"Available Time Slots for {day}", 
+                              font=("Arial", 14, "bold"), bg="#f0f0f0")
+        title_label.pack(pady=10)
+        
+        global day_choice, time_choice
+        day_choice = day
+        
+        times = schedule[day]
+        
+        for time_slot in times:
+            btn = tk.Button(frame, text=time_slot, width=25,
+                           command=lambda t=time_slot: self.select_time(day, t),
+                           bg="#2196F3", fg="white", font=("Arial", 10), pady=5)
+            btn.pack(pady=5)
+        
+        # Back button
+        btn_back = tk.Button(frame, text="Back", width=30,
+                            command=self.show_schedule_menu, bg="#FF9800", fg="white", pady=5)
+        btn_back.pack(side=tk.BOTTOM, pady=10)
+    
+    def select_time(self, day, time_slot):
+        """Select a time slot"""
+        global day_choice, time_choice
+        day_choice = day
+        time_choice = time_slot
+        messagebox.showinfo("Success", f"You have selected: {day_choice}, {time_choice}")
+        self.show_schedule_menu()
+    
+    def show_view_records(self):
+        """Show view appointment records window"""
+        self.clear_window()
+        
+        frame = tk.Frame(self.root, bg="#f0f0f0")
+        frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+        
+        title_label = tk.Label(frame, text="View Appointment Records", 
+                              font=("Arial", 14, "bold"), bg="#f0f0f0")
+        title_label.pack(pady=10)
+        
+        global played3
+        if not played3:
+            try:
+                playsound("view_details.wav")
+            except:
+                pass
+            played3 = True
+        
+        # Labels and entry fields
+        tk.Label(frame, text="Enter your name:", bg="#f0f0f0").pack(anchor=tk.W, pady=(5, 0))
+        entry_name = tk.Entry(frame, width=40)
+        entry_name.pack(pady=5)
+        
+        tk.Label(frame, text="Enter your contact number:", bg="#f0f0f0").pack(anchor=tk.W, pady=(5, 0))
+        entry_contact = tk.Entry(frame, width=40)
+        entry_contact.pack(pady=5)
+        
+        tk.Label(frame, text="Enter your contact email:", bg="#f0f0f0").pack(anchor=tk.W, pady=(5, 0))
+        entry_email = tk.Entry(frame, width=40)
+        entry_email.pack(pady=5)
+        
+        tk.Label(frame, text="Enter your home address:", bg="#f0f0f0").pack(anchor=tk.W, pady=(5, 0))
+        entry_address = tk.Entry(frame, width=40)
+        entry_address.pack(pady=5)
+        
+        def submit_appointment():
+            patient_name = entry_name.get()
+            patient_contact = entry_contact.get()
+            patient_email = entry_email.get()
+            patient_address = entry_address.get()
+            
+            self.process_appointment(patient_name, patient_contact, patient_email, patient_address)
+        
+        # Submit button
+        btn_submit = tk.Button(frame, text="Submit", width=30, command=submit_appointment,
+                             bg="#4CAF50", fg="white", font=("Arial", 10), pady=5)
+        btn_submit.pack(pady=10)
+        
+        # Back button
+        btn_back = tk.Button(frame, text="Back to Main Menu", width=30,
+                            command=self.show_main_menu, bg="#FF9800", fg="white", pady=5)
+        btn_back.pack(side=tk.BOTTOM, pady=10)
+    
+    def process_appointment(self, patient_name, patient_contact, patient_email, patient_address):
+        """Process the appointment submission"""
+        global ticket_number, played5, played6, played4
+        
+        # Check if all personal details are filled
+        if not all([patient_name.strip(), patient_contact.strip(), patient_email.strip(), patient_address.strip()]):
+            messagebox.showerror("Missing Details", "Oops! Missing personal details detected.\nKindly ensure all fields are filled in.")
+            if not played5:
+                try:
+                    playsound("oops.wav")
+                except:
+                    pass
+                played5 = True
+            return
+        
+        # Check if doctor, day, and time are selected
+        if not patient_doctor or not day_choice or not time_choice:
+            messagebox.showerror("Incomplete Details", "Incomplete Details.\nPlease select your doctor, appointment day, and time before proceeding.")
+            if not played6:
+                try:
+                    playsound("incomplete.wav")
+                except:
+                    pass
+                played6 = True
+            return
+        
+        # Generate ticket number
+        ticket_number = random.randint(100000, 999999)
+        
+        # Show summary
+        summary = f"""Thank you! Your appointment has been successfully recorded.
+
+APPOINTMENT SUMMARY
+==========================================
+Patient Name      : {patient_name}
+Patient Contact   : {patient_contact}
+Contact Email     : {patient_email}
+Patient Address   : {patient_address}
+Assigned Doctor   : {patient_doctor}
+Appointment Day   : {day_choice}
+Appointment Time  : {time_choice}
+Ticket Number     : #{ticket_number}
+=========================================="""
+        
+        if not played4:
+            try:
+                playsound("summary.wav")
+            except:
+                pass
+            played4 = True
+        
+        messagebox.showinfo("Appointment Summary", summary)
+        
+        # Ask to export to PDF
+        export_choice = messagebox.askyesno("Export to PDF", "Do you wish to export your appointment details to PDF?")
+        
+        if export_choice:
+            export_to_pdf(patient_name, patient_contact, patient_email, patient_address,
+                         patient_doctor, day_choice, time_choice, ticket_number)
+        
+        self.show_main_menu()
+    
+    def exit_app(self):
+        """Exit the application"""
+        confirm = messagebox.askyesno("Exit Program", "Are you sure you want to exit?")
+        
+        if confirm:
+            global played7
+            if not played7:
+                try:
+                    playsound("exit.wav")
+                except:
+                    pass
+                played7 = True
+            self.root.quit()
+
+# ================================================
+# Main Program
+# ================================================
 played = False
 played7 = False
 
-while True:
-   display()
-   if not played:
-        playsound("welcome.wav")
-        played = True
-   option = input("\nPlease enter your option( 1, 2, 3, or 4):")
-   
-   if option == "1":
-    os.system('cls')
-    print("\nYou have selected: -- View Available Doctors -- ")
-    doctor()
-
-   elif option == "2":
-    os.system('cls')
-    print("\nYou have selected: -- Schedule an Appointment -- ")
-    schedule()
-
-   elif option == "3":
-    os.system('cls')
-    print("\nYou have selected: -- View Appointment Records -- ")
-    view_appointments()
-
-      
-   elif option == "4":
-    os.system('cls')
-    print("\n-- Exit Program --")
-    confirm = input("\nAre you sure you want to exit? (yes/no): ").strip().lower()
-
-    if confirm == "yes":
-        os.system('cls')
-        print("\n-- Your session has ended. Thank you! --")
-        if not played7:
-          playsound("exit.wav")
-          played7 = True
-        break
-    elif confirm == "no":
-        os.system('cls')
-        print("\nRedirecting to the main menu...")
-        input("\nPlease Press Enter to continue...")
-    else:
-        print("\nInvalid input. Please type 'yes' or 'no'.")
-        input("\nPress Enter to continue...")
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = DoctorAppointmentApp(root)
+    root.mainloop()
 
 
 #====================================================================
